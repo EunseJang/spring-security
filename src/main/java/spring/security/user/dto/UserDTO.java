@@ -23,7 +23,7 @@ public class UserDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static UserDTO toEntity(User user) {
+    public static UserDTO fromEntity(User user) {
         return UserDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
