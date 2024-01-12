@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import spring.security.global.exception.ErrorResponseDTO;
+import spring.security.global.exception.code.ErrorCode;
+
 import java.io.IOException;
 
 @Slf4j
@@ -32,11 +35,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             String message = e.getMessage();
 
             // JWT 토큰 타입이 잘못된 경우
-            if(message.equals(ErrorCode.JWT_TOKEN_WRONG_TYPE.getDescription())) {
+            if(message.equals(ErrorCode.JWT_TOKEN_WRONG_TYPE.getErrorMessage())) {
                 setResponse(response, ErrorCode.JWT_TOKEN_WRONG_TYPE);
             }
             // JWT 토큰이 만료된 경우
-            else if (message.equals(ErrorCode.TOKEN_TIME_OUT.getDescription())) {
+            else if (message.equals(ErrorCode.TOKEN_TIME_OUT.getErrorMessage())) {
                 setResponse(response, ErrorCode.TOKEN_TIME_OUT);
             }
         }
@@ -49,7 +52,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         // JSON 매핑을 위한 ObjectMapper 객체 생성
         ObjectMapper objectMapper = new JsonMapper();
         // ErrorResponse 객체를 JSON 문자열로 변환
-        String responseJson = objectMapper.writeValueAsString(new ErrorResponse(errorCode));
+        String responseJson = objectMapper.writeValueAsString(new ErrorResponseDTO(errorCode));
 
         // HTTP 응답 헤더 설정
         response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");

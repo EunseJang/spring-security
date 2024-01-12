@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import spring.security.global.exception.CustomException;
+import spring.security.global.exception.code.ErrorCode;
 
 @Slf4j
 @RestController
@@ -13,13 +15,13 @@ public class SecurityExceptionController {
     @GetMapping("/exception/auth-denied")
     public void accessDenied() {
         log.info("ACCESS_DENIED - SecurityController");
-        throw new MyException(ErrorCode.ACCESS_DENIED);
+        throw new CustomException(ErrorCode.ACCESS_DENIED);
     }
 
     @ApiOperation(value = "LOGIN_REQUIRED 오류 발생 시", notes = "로그인 되지 않은 경우")
     @GetMapping("/exception/unauthorized")
     public void unauthorized() {
         log.info("LOGIN_REQUIRED - SecurityController");
-        throw new MyException(ErrorCode.LOGIN_REQUIRED);
+        throw new CustomException(ErrorCode.LOGIN_REQUIRED);
     }
 }

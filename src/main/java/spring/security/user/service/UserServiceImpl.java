@@ -3,6 +3,8 @@ package spring.security.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import spring.security.global.exception.CustomException;
+import spring.security.global.exception.code.ErrorCode;
 import spring.security.global.util.PasswordUtils;
 import spring.security.user.dao.UserRepository;
 import spring.security.user.domain.User;
@@ -31,18 +33,18 @@ public class UserServiceImpl implements UserService {
 
     private void validateJoin(JoinRequestDTO requestDTO) {
         if(userRepository.existsByEmail(requestDTO.getEmail())) {
-            throw new MyException(ErrorCode.USER_ALREADY_EXIST);
+            throw new CustomException(ErrorCode.USER_ALREADY_EXIST);
         }
 
         if(!PasswordUtils.equalsPlainText(requestDTO.getPassword(), requestDTO.getPasswordCheck())) {
-            throw new MyException(ErrorCode.PASSWORD_CHECK_INCORRECT);
+            throw new CustomException(ErrorCode.PASSWORD_CHECK_INCORRECT);
         }
     }
 
     @Override
     public UserDTO findByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new MyException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return UserDTO.fromEntity(user);
     }
