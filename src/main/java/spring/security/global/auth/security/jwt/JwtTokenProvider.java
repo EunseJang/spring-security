@@ -31,7 +31,8 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
-    public static final String TOKEN_PREFIX = "Bearer ";
+    // public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String TOKEN_PREFIX = "";
     private static final String KEY_ROLES = "reles";
 
     /** TODO accessToken, refresthToken 만료시간 설정 */
@@ -51,7 +52,7 @@ public class JwtTokenProvider {
 
         // redis token Map에 유저의 refreshToken 추가
         tokenRepository.addRefreshToken(email, refreshToken);
-        return new TokenResponseDTO(accessToken, refreshToken, email);
+        return new TokenResponseDTO(email, accessToken, refreshToken);
     }
 
     /** 사용자 유형에 따라 role 설정 후 반환 */
