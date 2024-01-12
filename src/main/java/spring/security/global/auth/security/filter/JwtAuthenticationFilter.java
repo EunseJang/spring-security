@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import spring.security.global.auth.security.jwt.JwtTokenProvider;
-
-import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
 
 @Slf4j

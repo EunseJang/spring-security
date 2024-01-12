@@ -1,6 +1,6 @@
 package spring.security.user.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @ApiOperation("회원가입")
+    @Operation(summary = "회원가입")
     @PostMapping("/auth/join")
     public ResponseEntity<?> join(@RequestBody JoinRequestDTO request) {
         UserDTO joinUser = userService.join(request);
