@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import spring.security.global.auth.dto.TokenResponseDTO;
 import spring.security.global.auth.service.AuthService;
+import spring.security.global.exception.CustomException;
+import spring.security.global.exception.code.ErrorCode;
 import spring.security.global.redis.TokenRepository;
 import spring.security.user.domain.UserType;
 
@@ -49,11 +51,7 @@ public class JwtTokenProvider {
 
         // redis token Map에 유저의 refreshToken 추가
         tokenRepository.addRefreshToken(email, refreshToken);
-
-        TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
-        tokenResponse.setEmail(email);
-
-        return tokenResponse;
+        return new TokenResponseDTO(accessToken, refreshToken, email);
     }
 
     /** 사용자 유형에 따라 role 설정 후 반환 */
@@ -70,7 +68,7 @@ public class JwtTokenProvider {
     /** refreshToken 확인 후 accessToken 재발행 */
     public TokenResponseDTO recreateAccessToken(String refreshToken) {
         if(!this.validateToken(refreshToken)) { // 만료된 토큰인지 확인
-            throw new MyException(ErrorCode.TOKEN_TIME_OUT);
+            throw new CustomException(ErrorCode.TOKEN_TIME_OUT);
         }
 
         Claims claims = parseClaims(refreshToken);
@@ -79,7 +77,7 @@ public class JwtTokenProvider {
         String findToken = tokenRepository.getRefreshToken(email);
 
         if(!refreshToken.equals(findToken)) {
-            throw new MyException(ErrorCode.JWT_REFRESH_TOKEN_NOT_FOUND);
+            throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_NOT_FOUND);
         }
 
         String accessToken = generateToken(claims, ACCESS_TOKEN_EXPIRE_TIME);
@@ -156,11 +154,11 @@ public class JwtTokenProvider {
             // JWT Token을 파싱하고, 클레임 정보 추출
             return Jwts.parser().setSigningKey(this.secretKey).parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) { // 토큰이 만료된 경우
-            throw new JwtException(ErrorCode.TOKEN_TIME_OUT.getDescription());
+            throw new JwtException(ErrorCode.TOKEN_TIME_OUT.getErrorMessage());
         } catch (SignatureException e) { // 토큰 서명이 잘못된 경우
-            throw new JwtException(ErrorCode.JWT_TOKEN_WRONG_TYPE.getDescription());
+            throw new JwtException(ErrorCode.JWT_TOKEN_WRONG_TYPE.getErrorMessage());
         } catch (MalformedJwtException e) { // 토큰 형식이 잘못된 경우
-            throw new JwtException(ErrorCode.JWT_TOKEN_MALFORMED.getDescription());
+            throw new JwtException(ErrorCode.JWT_TOKEN_MALFORMED.getErrorMessage());
         }
     }
 }
