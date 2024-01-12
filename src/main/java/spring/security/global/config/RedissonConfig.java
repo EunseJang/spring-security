@@ -13,7 +13,7 @@ public class RedissonConfig {
     @Value("${spring.data.redis.host}")
     private String host;
 
-    @Value("${psring.data.redis.port}")
+    @Value("${spring.data.redis.port}")
     private int port;
 
     private static final String REDISSON_HOST_PREFIX = "redis://";
