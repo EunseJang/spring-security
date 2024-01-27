@@ -20,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "회원가입")
-    @PostMapping("/auth/join")
+    @PostMapping("/api/v1/auth/join")
     public ResponseEntity<?> join(@RequestBody JoinRequestDTO request) {
         UserDTO joinUser = userService.join(request);
 
