@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import spring.security.global.auth.dto.LoginDTO;
 import spring.security.global.auth.dto.TokenResponseDTO;
@@ -19,13 +20,14 @@ import spring.security.user.dto.UserDTO;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "로그인, JWT 토큰 발생", description = "Authorization 헤더에 JWT 토큰을 포함하여 인증 처리")
-    @PostMapping("/login/user")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         UserDTO user = authService.authenticateUser(loginDTO);
         TokenResponseDTO tokenResponseDTO = jwtTokenProvider.createTokenResponse(user.getEmail(), user.getUserType());
@@ -34,7 +36,7 @@ public class AuthController {
     }
 
     @Operation(summary = "RefreshToken을 통해 AccessToken 재발급")
-    @PostMapping("/login/reissue")
+    @PostMapping("/reissue")
     public ResponseEntity<?> reissueToken(@RequestHeader("RefreshToken") String refreshToken) {
         TokenResponseDTO tokenResponseDTO = jwtTokenProvider.recreateAccessToken(refreshToken);
 
@@ -42,7 +44,7 @@ public class AuthController {
     }
 
     @Operation(summary = "Logout : refreshToken 삭제")
-    @PostMapping("/logout/user")
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                     @RequestHeader("Authorization") String accessToken) {
         log.info("Access Token : {}", accessToken);
