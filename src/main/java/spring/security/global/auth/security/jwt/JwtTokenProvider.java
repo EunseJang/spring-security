@@ -30,12 +30,7 @@ public class JwtTokenProvider {
 
     @Value("${spring.jwt.secret}")
     private String secretKey;
-
-    // public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String TOKEN_PREFIX = "";
-    private static final String KEY_ROLES = "reles";
-
-    /** TODO accessToken, refresthToken 만료시간 설정 */
+    private static final String KEY_ROLES = "roles";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = (long) 1000 * 60 * 60 * 24; // 24시간으로 설정
     private static final long REFRESH_TOKEN_EXPIRE_TIME = (long) 1000 * 60 * 60 * 24 * 30; // 한달로 설정
 
@@ -58,11 +53,8 @@ public class JwtTokenProvider {
     /** 사용자 유형에 따라 role 설정 후 반환 */
     private List<String> getRolesByUserType(UserType userType) {
         List<String> roles = new ArrayList<>();
-        roles.add("ROLE_USER");
+        roles.add("ROLE_" + userType.name());
 
-        if (userType == UserType.ADMIN) { // 관리자인 경우
-            roles.add("ROLE_ADMIN");
-        }
         return roles;
     }
 
@@ -84,13 +76,11 @@ public class JwtTokenProvider {
         String accessToken = generateToken(claims, ACCESS_TOKEN_EXPIRE_TIME);
 
         // refreshToken은 재발급 X
-        TokenResponseDTO tokenResponse = TokenResponseDTO.builder()
+        return TokenResponseDTO.builder()
                 .email(email)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
-
-        return tokenResponse;
     }
 
     /** JWT Token 생성 (Claims, expiredTime 사용) */
@@ -137,10 +127,9 @@ public class JwtTokenProvider {
 
     /** HTTP 요청 헤더에서 받은 토큰에서 "Bearer " prefix를 제거한 토큰 값 반환 */
     public String resolveTokenFromRequest(String token) {
-        if (StringUtils.hasText(token) && token.startsWith(TOKEN_PREFIX)) {
-            return token.substring(TOKEN_PREFIX.length());
+        if (StringUtils.hasText(token)) {
+            return token;
         }
-
         return null;
     }
 
